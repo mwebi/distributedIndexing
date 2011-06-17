@@ -1,0 +1,24 @@
+7) Where web design is very much fluent and you never know about resolutions and available screen space (which is why you test for it before you open for example a menu) most gaming seems to be within fixed boundaries. Canvas for example has a fixed size in pixels. Is that a limitation? I always found the unknown part of webdesign the thing that excited me the most as it meant my code has to be bullet-proof.
+
+I agree, but of course this is a huge challenge if you’re building a game and you usually work to a fixed pixel size. Anything based around bitmaps is fixed although I guess you can scale them up and down. Even Flash games seem to use bitmaps these days. It’s ironic because Flash is very good at scaling vector graphics. Historically Flash games have been set to a fixed and small pixel size due to performance issues in the early FlashPlayer versions.
+8) Animations just didn’t look right before libraries started implementing easing to simulate natural movement with acceleration and slowing things down naturally. The next step of that is bringing physics into animations. Is that easy these days?
+
+There’s a technique that’s familiar to visual programmers – a real time ease-out that I like to call tweasing. In fact i made a library in Flash called Tweaser that wraps this technique. Traditional tweeners have a start and end point and a duration. Tweasing just has a target and the object eases towards it. If you keep a bit of momentum from the previous frame you can even implement a springy naturalistic movement.
+
+The best reason for using this is that you can change the target at any time during the animation and your object updates its trajectory in a smooth way. It’s really powerful and responsive, especially with 3D. Check tweaser.org for a full video explanation of the technique. Perhaps if enough people want it I’ll port it to JS!
+9) What do you think will be the killer use for WebGL on the internet? I’ve played with Google’s Body Browser and I loved it – do you think the web and the open stack is ready for 3D or is Flash with Molehill still ruling that sector?
+
+I’m not sure what the practical uses for in-browser 3D are yet. I expect we’ll probably see some pretty exciting 3D mapping from Google. But of course gaming is what everyone is excited about – it remains to be seen how these 3D gaming capabilities will affect the casual in-browser games market.
+
+There’s something very pleasing about WebGL enabling GPU graphics right there within your browser, but it’s a big problem that IE has no plans to support it. Flash’s GPU enabled player (codename Molehill) has a huge advantage – FlashPlayer take up rates have been incredible with new versions of the player reaching 90% penetration within a few months. I don’t think there’ll ever be another plug-in with the penetration rates of Flash.
+
+Both WebGL and Molehill have huge workflow issues, despite the open source libraries like three.js and Away3D. Thankfully Unity3D have announced that they’re targeting Molehill. Unity3D is truly a joy to work with – it seamlessly imports 3D models and bitmaps, has built in physics, lighting, shadows and a particle system. You even program it with a flavour of JavaScript! So if they could also target webGL…?
+10) Inspiration time. What are things you think people should look at to catch the bug of visual programming and where are the tutorials to learn about them?
+
+If you want code tips, you should look no further than Keith Peters. Keith is well known in the ActionScript world for his Making Things Move books. He’s just completed 30 JavaScript experiments in 30 days – well worth checking out.
+
+Outside of JavaScript I’m hugely influenced by digital artists such as Robert Hodgin (@flight404), Chris O’Shea, Jared Tarbell, and Jer Thorp (@blprnt), who all work in a variety of different programming languages.
+
+It’s a really exciting time for interactive technology and in addition to my CreativeJS workshops, I’ll be continuing more large scale motion detection projection projects in openFrameworks and Processing.
+
+Photo by Andy Polaine

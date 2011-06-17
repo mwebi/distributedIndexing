@@ -1,0 +1,114 @@
+Guidelines
+
+Please include a sample image or two showing off your shader goodness. If unsure how to do this, you can view a good example on the SkinShader2 page, as a reference.
+Official Shaders
+
+    Built In Shaders - Here you can get the sourcecode for all the shaders that are built into Unity. 
+
+Unity 3.x Shaders
+
+    MatCap - A bumped shader without lighting, for use with materials from programs like ZBrush.
+    Fur (Unity3) - A remake for Unity 3 support of a fur shader by Jonathan Czeck found in unity
+    Skin Shader 3 - The classic skin shader redone for Unity 3 by forum user bournifle
+    Planet - A shader which adds an atmosphere and shading for one pointlight source to a planet.
+    Dissolve With Texture - A simple shader which dissolves objects, using an image as guidance.
+    TransparentShadowCaster - Can handle transparency and takes it into account for casting shadows. 
+
+Post Processing Shaders(Unity Pro only)
+
+    Dream - Blurs screen.
+    EdgeDetect - Detects Edges.
+    Emboss - Emboss filter.
+    Frost - Freezes screen like in crysis (sort of).
+    NightVision - Night Vision effect.
+    Pixelated - Pixelates screen.
+    ThermalVision - Thermal view like in Predator movies.
+    Waves - Screen waves (can be used for underwater or delirious moments like in Amnesia game). 
+
+Unity 2.x Shaders
+Porting Shaders
+
+    ShaderPortingNotes - Some guidelines for porting shaders between FX composer, RenderMonkey, Mental Mill, ShaderFX and Unity 
+
+Debugging
+
+    BarycentricWireframeUv1 - A wireframe shader for barycentric uvs. 
+
+    Delta - Visualize loss of detail caused by texture compression. 
+
+    NormalSmoothing - Visualize normal smoothing. 
+
+
+Fullscreen Effects (Unity Pro only)
+
+    ColorBlindness - Coarse simulation of what your game might look like to someone who is red/green colorblind.
+    DreamBlurEffect - Yet another bloom/glow style effect (Post Render Effect, requires Unity Pro)
+    RefractionEffect - Fullscreen refraction effect. Can be used for raindrops, blood, underwater effects and others. Including color and color mask. 
+
+FX
+
+    Anisotropic 2.x - Updated anisotropic lighting for version 2.x
+    DepthMask - For cutting holes in objects without changing geometry.
+    DesaturatedDarks2 - Non-lit areas are desaturated; lights "saturate" the colors (updated for v2).
+    FXHyperbolicStatic - Special effect for things like force fields.
+    FXHyperbolicStaticParticle - Special effect for things like energy balls with particle systems.
+    FXTrigField - Special effect for things like force fields.
+    MirrorReflection2 - A shader and script to make reflective mirrors.
+    Shield - A shader and script to make Shields spheres around your units (works with other shapes too).
+    TextureMask - A simple shader that will allow you to mask of parts of a texture.
+    Unlit - A shader that doesn't use lighting, useful for dashboard and other 3D GUI components.
+    Binary - Limits down textured models to 2 individual colors.
+    ProjectorAdditive - A shader for the projector component that does an additive/screen effect as opposed to multiply.
+    XRay - Additive X-Ray shader.
+    Planet - A shader which adds an atmosphere and per pixel lighting to your planets.
+    Fur - A basic fur shader with some minor(?) sorting problems. 
+
+General
+
+    BakedVertexColorBumpSpec2 - Lightmap in vertex colors, bumped specular.
+    BumpSpecRim - Bumpmapped specular with fake rim light affected by bump map.
+    BumpColorSpec - Bumpmapped specular with colored specular map.
+    ReflectiveVertexlitSimple - Simplified Reflective VertexLit shader, with a slider to control amount instead of alpha channel.
+    SkinShader2 - Shadow-supporting wrapped-diffuse+ specular + bumped + rim + fresnel shader. Good for skin shading!
+    3SideProjDiffuse - Per pixel shaded autotexturing. No need for an UV-Map!
+    3SideProjDiffuse1.1 - Added the option of selecting different textures for X, Y and Z coordinates.
+    ReliefDiffuse - Bumpmapped reliefmapping shader.
+    ReliefSpecular - Bumpmapped reliefmapping shader with specularity. 
+
+Interface
+
+    3DText - Use this instead of the default shader when creating 3D Text, so the text doesn't always appear on top of objects.
+    TexturedFont - Use this shader in place of the built in Text Shader for multicolored fonts instead of solid colored ones. 
+
+iPhone
+
+These shaders are targeted at the original iPhone and iPod touch.
+
+    Blend 2 Textures - Blends two textures based on a slider, with an option to use light from Simply Lit
+    Blend 2 Textures by Lightmap Alpha - A lightmapped shader that blends two tiling textures based on a splatmap.
+    Masked Tint - Selectively tint your models based on a mask; render multiple differently-colored objects with only one total draw call.
+    Simply Lit - Uses ambient and diffuse vertex lighting to affect a single texture.
+    Texture Only - Maps a 2D texture onto your model, in 3D!
+    VertexColorUnlit - Two shaders for using with vertex-colored meshes; allows overbrightening
+    iPhoneGems -Using the gem .unitypackage from the unity website will cause poor gem shading on the iphone, this is their code including an update to the sub-shader that makes nicer iphone gems. 
+
+Terrain
+
+    LayerShader - A terrain shader that mixes two tileable textures.
+    TerrainTwoLayerBumped - A terrain shader that mixes two tileable textures, plus a bumpmap.
+    TerrainFourLayerDiffuseFast - A terrain shader that mixes four tileable textures, and also works like the Diffuse Fast shader.
+    TerrainFourLayer2Pass - A terrain shader that mixes four tileable textures; should work on all modern cards and has fog.
+    FourSplatBlendWrapShader - A terrain shader that mixes and wraps 4 diffuse splats from a 4x4 texture sheet. 
+
+Toon
+
+    ToonShadowed - Variant of the Toon-Basic shader that receives shadows.
+    OutlinedDiffuse - Variant of the Toon-Basic shader that uses diffuse shading for surfaces 
+
+Transparent
+
+    AlphaClipsafe - Like Particles/Alpha Blended, but fades out before it intersects the camera's near clipping plane.
+    AlphaSelfIllum - Textures object which is unaffected by light.
+    AlphaVertexLitZ - Just like Transparent/VertexLit, but with proper depth buffering. Useful for objects that need to fade out.
+    UnlitAlphaWithFade - Unlit shader similar to AlphaSelfIllum, but with the alpha of the colour taken into account to allow fading.
+    AlphaDiffuse2sided - Transparent 2-sided rendering 

@@ -1,0 +1,37 @@
+Ten questions about HTML5 for Seb Lee Delisle
+1) You are very known to give workshops and talk about very visual programming – creating beautiful, and highly technical stuff. How do people normally react and do you think we will see more of that in the mainstream?
+
+Generally people seem to react really well! Particularly in the JavaScript community where people are now starting to discover the new creative possibilities in this medium. The part I love the most is showing how such simple code can create beautiful effects.
+
+I’m already seeing subtle animated graphics crossing over into the mainstream – just look at what’s happening with the Google doodle lately. My job is to help programmers to develop a sensibility for animation and use it tastefully.
+2) In the past you’ve been known as a pure Flash guy – and actually one of the few that released code outside the Flash community and tried to cross boundaries. Personally I am so tired of the “HTML5 as the Flash killer” and “Flash as the saviour of the web as it is truly cross-platform” arguments. How can we do more to break the barriers between the Flash and non-Flash communities?
+
+Although known primarily for my (BAFTA winning ;-) ) Flash work, these days I seem to be growing into a polymath! In the last month I’ve worked in C++, Processing, JavaScript, and ActionScript and enjoy switching between them all.
+
+The most important thing is to learn as much as we can about all technologies. Then you can make informed decisions about the best tool for the job.
+
+I’m pleased to see other famous Flashers doing great work in JS. Mr Doob (of three.js) used to be a Flash programmer and is an amazing visual coder. Grant Skinner is making a canvas graphics library called Easel.js.
+
+I think it’s unlikely that JSers will be keen to invest time into learning Flash, but it’s important to recognise the strengths of the plug-in and use it where appropriate.
+3) Looking at the open web stack, what gets you most excited? Canvas? SVG? Processing? And why?
+
+Canvas is fun but can be a bit CPU heavy if not treated with care. SVG is very interesting, particularly Raphael.js which is a library that neatly wraps SVG and falls back to VML – it even works in IE6! SVG is definitely under-used, particularly when IE9 can render it super fast with the GPU. But we’re lacking good tools to make animated content.
+
+I love the Processing community and Processing.js makes things quite accessible, but for truly optimised canvas rendering you’re probably better off learning the native canvas API.
+
+Canvas is the new thing so naturally everyone’s really excited about it but I think there’s still lots to explore in just moving DOM objects around. You get better backwards compatibility and often it’s faster than canvas.
+4) What are the limits of open web technology? Where would you see the next phase of research into standards to go?
+
+This is a really hard question to answer! I guess the biggest difficulty is the sheer number of different vendors that have to work together (or not ;-) ). But the proliferation of webkit means that we’re seeing browsers pop up in a variety of different devices from your eReader to your TV. As these devices get faster and faster it’s going to be a realistic possibility to have games and rich content everywhere. Whether we want that or not is a different matter!
+
+Browsers are still far behind Flash in terms of video, camera access, socket connections and P2P. I would say the most important of these would be video. Browsers should just be able to play a video in the page. But this thorny codec issue doesn’t seem to be disappearing any time soon.
+5) Beautiful things also need to perform well. What are your main tips to create smooth animations and interactions that don’t flicker?
+
+This is a hugely wide ranging question! But it’s usually the rendering that’s the bottleneck, especially if you’re working on canvas. Only redraw pixels when you absolutely need to. I’ve just made a demo of the game Asteroids, where I move a little canvas around for the ship, rather than clearing a massive canvas every frame even when just a little bit of the screen needs updating.
+
+If you’re moving DOM objects around, use the 3D CSS transform – even if you just set a z position of 0 you get hardware acceleration in webkit browsers. I’ve made a particle system that handles hundreds of DOM objects and is super fast, even on iOS.
+
+And use requestAnimationFrame rather than a setInterval for your redraw loop. This ensures that you’ll sync with the monitor refresh rate avoiding screen tearing. Perhaps more importantly, it’s disabled when your browser tab isn’t visible which saves your battery.
+6) A lot of the things we do when building games and animations is cheating. I remember working on very low-spec environments like Commodore 64 where you could have used real physics algos but found something much less computation heavy that did the job and relied on the human eye to be lazy and fix glitches for me. Is that what we still do?
+
+It’s still what I do. There are very few resources that outline these easy solutions, most books are very advanced. I’ve accumulated and devised these techniques over the years which is why I love sharing and demystifying these techniques on my courses and presentations.
