@@ -4,6 +4,7 @@
 #include <fstream>
 #include <map>
 #include <set>
+#include <cstring>
 
 using boost::asio::ip::tcp;
 
@@ -19,7 +20,7 @@ public:
 		// Setup the networking system
 		ioService = new boost::asio::io_service();
 		readRoutingTable(routingTableName);
-        readTextFile(textFile.c_str());
+		readTextFile(textFile.c_str());
 		try {
 			acceptor = new tcp::acceptor(*ioService, routingTable[nodeNumber]);
 		} catch (std::exception &) {
@@ -29,191 +30,163 @@ public:
 	}
 
 	void run() {
-        std::cout << "NodeNumber: " << nodeNumber << std::endl;
-        int amountOfNodes = routingTable.size();
-        std::string wordToSearch ="";
-     
-        //------------------------------------
-        //calculate receives
-        int tester = 1;       
-        int receives = 0;
-        while((nodeNumber & tester) == 0 && (nodeNumber + tester) < amountOfNodes){
-            ++receives;
-            tester = tester << 1;
-        }
-        while((nodeNumber & tester) == 0 && nodeNumber != 0){
-            tester = tester << 1;
-        }
+		std::cout << "NodeNumber: " << nodeNumber << std::endl;
+		int amountOfNodes = routingTable.size();
+		std::string wordToSearch ="";
+	 
+		//------------------------------------
+		//calculate receives
+		int tester = 1;       
+		int receives = 0;
+		while((nodeNumber & tester) == 0 && (nodeNumber + tester) < amountOfNodes){
+			++receives;
+			tester = tester << 1;
+		}
+		while((nodeNumber & tester) == 0 && nodeNumber != 0){
+			tester = tester << 1;
+		}
+		
+		std::cout << "receives: " << receives << std::endl;
+		//------------------------------------
+
+		if(nodeNumber == 0) {            			
+			printf("Word to search: ");
+			std::cin >> wordToSearch;
+			boost::to_lower(wordToSearch);
+			for(int i(1); i < amountOfNodes; ++i){                
+				sendDataToNode(wordToSearch, i);
+			}
+		} else {  
+			std::cout << "send to node: " << (nodeNumber - tester) << std::endl;
+			wordToSearch = receiveData();     
+			std::cout << "received: " << wordToSearch << std::endl;            
+		}
+		
+		wordToSearchNextWords = nextWordCounts[wordToSearch];           		
+		
+		while(receives){
+			receiveAndHandleResults();
+            std::cout <<  std::endl << --receives << "receives left " << std::endl;
+		}
+		
+		if(nodeNumber == 0){
+            std::cout << "\n************\nresults for " << wordToSearch << ":"<< getTopTenString() << "\n************\n\n";
+		}
+		else
+		{ 
+            std::string sendingData = getTopTenString();
+            // send a # if there are no results
+            if( sendingData.length() == 0) sendingData = "#";
+			sendDataToNode(sendingData, nodeNumber - tester);
+		}
+
         
-        std::cout << "receives: " << receives << std::endl;
-        //------------------------------------
-
-        if(nodeNumber == 0) {            
-            
-            printf("Word to search: ");
-            std::cin >> wordToSearch;
-
-            for(int i(1); i < amountOfNodes; ++i){                
-                sendDataToNode(wordToSearch, i);
-            }
-
-        } else {  
-            std::cout << "send to node: " << (nodeNumber - tester) << std::endl;
-            wordToSearch = receiveData();     
-            std::cout << "received: " << wordToSearch << std::endl;
-        }
-
-        
-        WordCounts wordToSearchNextWords;
-        wordToSearchNextWords = nextWordCounts[wordToSearch];           
-
-        for (
-            WordCounts::iterator wordCount = wordToSearchNextWords.begin();
-			wordCount != wordToSearchNextWords.end();
-			wordCount++
-		) {
-			std::cout << " " << wordCount->first << "(" << wordCount->second << ")";
-        }
-        
-        while(receives){
-			std::cout << "vor receive" << std::endl;
-
-            std::string receivedResults = receiveData();
-            //
-            std::stringstream receivedResultsStream(receivedResults);
-			
-			std::cout << "received this string: " << receivedResults<<std::endl;
-
-            
-			while(!receivedResultsStream.eof())
-            {
-                int x;
-                std::string word;
-                receivedResultsStream >> word >> x;
-                wordToSearchNextWords[word]+=x;
-            }
-			std::cout << "received this string: " << receivedResults<<std::endl;
-
-            std::cout << --receives << "receives left " << std::endl;
-        }
-        
-        if(nodeNumber == 0){
-            //std::cout << "sum: " << sum << std::endl;
-            for (
-			WordCounts::iterator wordCount = wordToSearchNextWords.begin();
-			wordCount != wordToSearchNextWords.end();
-			wordCount++
-		    ) {
-			    std::cout << "merged data: " << wordCount->first << "(" << wordCount->second << ")";
-		    }
-        }
-        else
-        {
-            //sendDataToNode(mapToString(wordToSearchNextWords), nodeNumber - tester);  
-            
-            std::stringstream resultsToSend;
-            std::string currentWord;
-            int currentMax;
-            for(int i(0); i < 10; ++i)
-            {
-                currentMax = 0;
-                for (
-                WordCounts::iterator wordCount = wordToSearchNextWords.begin();
-			    wordCount != wordToSearchNextWords.end();
-			    wordCount++
-		        ) {
-                    if( currentMax < wordCount->second) 
-                    {
-                        currentMax = wordCount->second;
-                        currentWord = wordCount->first;
-                    }
-
-			        //std::cout << " " << wordCount->first << "(" << wordCount->second << ")";
-                }
-				
-				if( currentMax == 0) break;
-				
-				wordToSearchNextWords.erase(currentWord);
-				std::string space = " ";
-				resultsToSend << currentWord  << space << currentMax << space;
-				
-				
-            }
-			std::cout << "string to send: " << resultsToSend.str() << std::endl;
-            sendDataToNode(resultsToSend.str(), nodeNumber - tester);
-        }
-
-        std::cin.clear();
-        int e;
-        std::cin >> e;                
+		std::cin.clear();
+		int e;
+		std::cin >> e;                
 	}
 
 private:
 	// Sends the given data to the given target node and waits
 	// until the data is received by the remote endpoint.
-    
-    // use typedef to abbreviate the type names
-    typedef std::map<std::string,int> WordCounts;
-    typedef std::map<std::string,WordCounts> NextWordCounts;
+	
+	// use typedef to abbreviate the type names
+	typedef std::map<std::string,int> WordCounts;
+	typedef std::map<std::string,WordCounts> NextWordCounts;
 
-    NextWordCounts nextWordCounts;
+	NextWordCounts nextWordCounts;
+    WordCounts wordToSearchNextWords;
 
-	void sendDataToNode(std::string x, int targetNodeNumber) {
-		std::stringstream dataStream;
-		dataStream << x << "###";
+    void receiveAndHandleResults()
+    {
+        std::string receivedResults = receiveData();            
+            if( receivedResults != "#")
+            {
+			    std::stringstream receivedResultsStream(receivedResults);
+			    while(!receivedResultsStream.eof())
+			    {
+				    int x;
+				    std::string word;
+				    receivedResultsStream >> word >> x;
+				    wordToSearchNextWords[word]+=x;
+			    }
+            }			
+    }
+
+	void sendDataToNode(std::string x, int targetNodeNumber) {		
 		try {
 			tcp::socket socket(*ioService);
 			socket.connect(routingTable[targetNodeNumber]);
-			socket.send(boost::asio::buffer(dataStream.str()));
+			std::cout << "size of sent data: " << socket.send(boost::asio::buffer(x)) << std::endl;
 			socket.shutdown(tcp::socket::shutdown_both);
 			socket.close();
+			std::cout << "sent data: " << x << std::endl;
 		} catch (std::exception &) {
 			std::cout << "error sending data to " << targetNodeNumber << ": " << routingTable[targetNodeNumber] << std::endl;
 			throw;
 		}
 	}
-    void printIndex(){
-    
 
-	std::cout << "index:\n";
-	for (
-		NextWordCounts::iterator nextWordCount = nextWordCounts.begin();
-		nextWordCount != nextWordCounts.end();
-		nextWordCount++
-	    ) {
-		std::cout << nextWordCount->first << ":";
-		for (
-			WordCounts::iterator wordCount = nextWordCount->second.begin();
-			wordCount != nextWordCount->second.end();
-			wordCount++
-		) {
-			std::cout << " " << wordCount->first << "(" << wordCount->second << ")";
-		}
-		std::cout << std::endl;
-	}
-    
+    std::string getTopTenString()
+    {
+        std::stringstream resultsToSend;
+			std::string currentWord;
+			int currentMax;
+			for(int i(0); i < 10 && wordToSearchNextWords.size() > 0 ; ++i)
+			{
+				currentMax = 0;
+				for (
+					WordCounts::iterator wordCount = wordToSearchNextWords.begin();
+					wordCount != wordToSearchNextWords.end();
+					++wordCount) 
+				{
+					if( currentMax < wordCount->second) 
+					{
+						currentMax = wordCount->second;
+						currentWord = wordCount->first;
+					}
+				}
+				wordToSearchNextWords.erase(currentWord);
+				resultsToSend << " " << currentWord << " " << currentMax;
+			}
+            return resultsToSend.str();
     }
+
+    void printIndex(){
+        std::cout << "index:\n";
+	    for (
+		    NextWordCounts::iterator nextWordCount = nextWordCounts.begin();
+		    nextWordCount != nextWordCounts.end();
+		    nextWordCount++
+	        ) {
+		    std::cout << nextWordCount->first << ":";
+		    for (
+			    WordCounts::iterator wordCount = nextWordCount->second.begin();
+			    wordCount != nextWordCount->second.end();
+			    wordCount++
+		    ) {
+			    std::cout << " " << wordCount->first << "(" << wordCount->second << ")";
+		    }
+		    std::cout << std::endl;
+	    }    
+    }
+
 	// Waits until data from any incoming node is received and
 	// returns the received data.
 	// Note that this functions accepts data from any endpoint even if
 	// this endpoint is not entered in the routing table.
 	std::string receiveData() {
-		std::string incommingString;
+		std::string x;
 		char buffer[1024];
 		tcp::socket socket(*ioService);
 		try {
 			acceptor->accept(socket);
+			//memset(buffer, 0, 1024);
 			socket.receive(boost::asio::buffer(buffer, 1024));
 			socket.shutdown(tcp::socket::shutdown_both);
 			socket.close();
-			std::stringstream dataStream(buffer);
-			std::cout << "received this buffer: " << dataStream.str()<<std::endl;
-			std::cout << "pausing: ";
-			std::string asd;
-			std::cin >> asd;
-			dataStream >> incommingString;
-			incommingString.erase(incommingString.find("###"));
-			return incommingString;
+			std::string dataStream(buffer);			
+			return dataStream;
 		} catch (std::exception &) {
 			std::cout << "error receiving data." << std::endl;
 			throw;
@@ -240,14 +213,14 @@ private:
 			if (lineStream.str().at(0) == '#') continue;
 			lineStream >> ipAddress;
 			lineStream >> port;
-            lineStream >> textFile;
+			lineStream >> textFile;
 
 			std::cout << nodeNumber << "= " << ipAddress << ":" << port << std::endl;
-            if(this->nodeNumber == nodeNumber)
-            {
-                this->textFile = textFile;
-            }
-           
+			if(this->nodeNumber == nodeNumber)
+			{
+				this->textFile = textFile;
+			}
+		   
 			tcp::resolver::query query(tcp::v4(), ipAddress, port);
 			try {
 				routingTable.push_back(*resolver.resolve(query));
@@ -258,51 +231,53 @@ private:
 		}
 	}
 
-    void readTextFile(char const *fileName) {
+	void replaceWithSpaces(std::string& x, bool alphaNum = false)
+	{
+		int stringLength = x.size();
+		int character = 0;
+		for( int i(0); i < stringLength; i++)
+		{
+			character = x[i];
+			if(character < 0 || character > 255) x[i] = ' ';
+            if((alphaNum ? !std::isalnum(x[i]) : !std::isalpha(x[i]))) x[i] = ' ';
+		}
+	}
+
+	void readTextFile(char const *fileName) {
 		char line[1024];
-        
+		
 		std::ifstream file;				
-        std::string firstWord = "" , secondWord = "";
-        int character = 0;
+		std::string firstWord = "" , secondWord = "";
+		int character = 0;
 
 		file.open(fileName);        
-		while (!file.eof()) {
-            
+		while (!file.eof()) {			
 			file.getline(line, 1024);
-            //prepare string for further usage
-            std::string lineString(line);
-            int stringLength = lineString.size();
-            
-            boost::to_lower(lineString);
-            for( int i(0); i < stringLength; i++)
-            {
-                character = lineString[i];
-                if(character < 0 || character > 255) lineString[i] = ' ';
-                if(!std::isalpha(lineString[i])) lineString[i] = ' ';
-            }            
-            boost::trim(lineString);
-            
+			//prepare string for further usage
+			std::string lineString(line);
+			int stringLength = lineString.size();
+			
+			boost::to_lower(lineString);
+			replaceWithSpaces(lineString, false);                        
+			boost::trim(lineString);
+			
 			std::stringstream lineStream(lineString);            
-            
-            if (lineStream.str().length() == 0) continue;
-            while(!lineStream.eof())
-            {		        
-                if(firstWord.empty()) lineStream >> firstWord;
-		        lineStream >> secondWord;                       
-
-                //put Words into Structur;
-                //std::cout << firstWord << ", " << secondWord << std::endl;
-                nextWordCounts[firstWord][secondWord]++;
-                //
-                firstWord = secondWord;
-            }           
+			
+			if (lineStream.str().length() == 0) continue;
+			while(!lineStream.eof())
+			{		        
+				if(firstWord.empty()) lineStream >> firstWord;
+				lineStream >> secondWord; 
+                //put Words into Structur;				
+				nextWordCounts[firstWord][secondWord]++;
+				firstWord = secondWord;
+			}           
 		}
-	    //printIndex();
-    }
+	}
 
 	// Node topology data
 	int nodeNumber;
-    std::string textFile;
+	std::string textFile;
 
 	// network data
 	boost::asio::io_service *ioService;
@@ -329,6 +304,9 @@ int main(int argc, char const *argv[]) {
 	} catch (std::exception &cause) {
 		std::cout << cause.what() << std::endl;
 	}
+
+	char x;
+	std::cin >> x;
 
 	return 0;
 }
