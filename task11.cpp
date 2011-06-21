@@ -181,7 +181,7 @@ private:
 		tcp::socket socket(*ioService);
 		try {
 			acceptor->accept(socket);
-			//memset(buffer, 0, 1024);
+			memset(buffer, 0, 1024);
 			socket.receive(boost::asio::buffer(buffer, 1024));
 			socket.shutdown(tcp::socket::shutdown_both);
 			socket.close();
